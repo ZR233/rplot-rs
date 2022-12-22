@@ -39,7 +39,7 @@ fn init_client()-> Option<PlotClient<Channel>>{
     client
 }
 
-pub fn async_use_client<F, T>(func:  F)
+pub fn async_use_client<F>(func:  F)
 where for<'a> F:  FnOnce(&'a mut PlotClient<Channel>)-> Pin<Box<dyn Future<Output = () > +'a>>
 {
 

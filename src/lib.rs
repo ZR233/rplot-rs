@@ -8,6 +8,17 @@ use futures::FutureExt;
 use crate::client::*;
 use crate::client::plot_client::PlotClient;
 
+mod prelude{
+    use crate::{client, figure};
+
+
+
+    pub use figure::Figure;
+    pub use client::Chart;
+}
+
+
+
 pub fn add(left: usize, right: usize) -> usize {
 
     async_use_client(| c|async{
@@ -37,5 +48,16 @@ mod tests {
     fn it_works() {
         let result = add(2, 2);
         assert_eq!(result, 4);
+    }
+
+
+    #[test]
+    fn test_figure() {
+        use super::prelude::*;
+
+        Figure::new("test_figure").show();
+
+
+        assert_eq!(4, 4);
     }
 }

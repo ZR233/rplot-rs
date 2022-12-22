@@ -1,4 +1,8 @@
-use crate::client::{Chart, ChartSetType, Sharp};
+use tonic::codegen::Body;
+use crate::client::{async_use_client, Chart, ChartSetType, NewFigureReply, Sharp};
+use crate::client;
+use futures::FutureExt;
+use tonic::{Response, Status};
 
 pub struct Figure{
     name: String,
@@ -30,6 +34,12 @@ impl Figure {
         self
     }
     pub fn add_chart(&mut self, chart: Chart)-> &mut Self{
+        if self.sharp.is_none() {
+            self.charts.push(chart);
+            return self;
+        }
+
+
         for i in 0..self.charts.len() {
             if self.charts[i].r#type == ChartSetType::Blank as _ {
                 self.charts[i] = chart;
@@ -46,14 +56,30 @@ impl Figure {
     }
 
 
+    pub fn show(&mut self){
+        if self.sharp.is_none() {
+            self.sharp = Some(Sharp{
+                height: self.charts.len() as _,
+                width: 1,
+            })
+        }
 
 
-    pub fn show(&self)->Result<(), std::io::Error>{
+        let request = tonic::Request::new(client::Figure{
+            id: 0,
+            name: self.name.clone(),
+            sharp: self.sharp.clone(),
+            charts: self.charts.clone(),
+        });
 
-
-
-
-        Ok(())
+        async_use_client(|client| Box::pin(async move{
+            match client.new_figure(request).await{
+                Ok(_) => {}
+                Err(e) => {
+                    log::warn!("plot figure err: {:?}", e);
+                }
+            }
+        }));
     }
 
 }

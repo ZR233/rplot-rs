@@ -3,11 +3,15 @@ tonic::include_proto!("plot");
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
+use futures::StreamExt;
 use lazy_static::lazy_static;
 use tokio::runtime::Runtime;
 use tokio::sync::Mutex;
 use tonic::transport::{Channel, Error};
 use crate::client::plot_client::PlotClient;
+use futures::FutureExt;
+use tonic::{Response, Status};
+use crate::client;
 
 lazy_static! {
     pub static ref RT: Runtime = {
@@ -70,6 +74,18 @@ where for<'a> F:  FnOnce(&'a mut PlotClient<Channel>)-> Pin<Box<dyn Future<Outpu
 
         func(client).await;
     });
+}
+
+pub fn clear(){
+    async_use_client(|client|async{
+        let request = tonic::Request::new(Empty{});
+        match client.clear(request).await{
+            Ok(_) => {}
+            Err(e) => {
+                log::warn!("clear err: {:?}", e);
+            }
+        };
+    }.boxed());
 
 
 }

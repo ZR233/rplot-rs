@@ -3,11 +3,12 @@ use crate::client::{async_use_client, Chart, ChartSetType, NewFigureReply, Sharp
 use crate::client;
 use futures::FutureExt;
 use tonic::{Response, Status};
+use crate::chart_data;
 
 pub struct Figure{
     name: String,
     sharp: Option<Sharp>,
-    charts: Vec<Chart>,
+    charts: Vec<dyn chart_data::Chart>,
 }
 
 impl Figure {

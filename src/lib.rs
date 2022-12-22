@@ -1,7 +1,8 @@
 extern crate core;
-
+mod chart_data;
 mod client;
 mod figure;
+
 
 use std::borrow::Borrow;
 use futures::FutureExt;
@@ -10,11 +11,10 @@ use crate::client::plot_client::PlotClient;
 
 mod prelude{
     use crate::{client, figure};
-
-
-
     pub use figure::Figure;
     pub use client::Chart;
+    pub use client::clear;
+
 }
 
 
@@ -58,6 +58,14 @@ mod tests {
         Figure::new("test_figure").show();
 
 
+        assert_eq!(4, 4);
+    }
+
+    #[test]
+    fn test_clear() {
+        use super::prelude::*;
+
+        clear();
         assert_eq!(4, 4);
     }
 }

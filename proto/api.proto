@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package plot;
+import "google/protobuf/any.proto";
+
+service Plot{
+  rpc NewFigure(Figure)returns(NewFigureReply){}
+  rpc Clear(Empty)returns(Empty){}
+}
+
+message Empty{}
+
+message Sharp{
+  int32 width=1;
+  int32 height=2;
+}
+enum ChartSetType{
+  Blank=0;
+  Liner=1; // ChartSetLiner
+  Spectrum=2;
+}
+
+
+message Data2D{
+  double x=1;
+  double y=2;
+}
+
+message LinerData{
+  string name=1;
+  int64 color=2;
+  repeated Data2D data=3;
+}
+
+message ChartSetLiner{
+  repeated LinerData dataSet=2;
+}
+
+
+message Chart{
+  string title=1;
+  ChartSetType type=2;
+  google.protobuf.Any chartSet =3;
+}
+
+message Figure{
+  int32 id=1;
+  string name=2;
+  Sharp sharp=3;
+  repeated Chart charts=4;
+}
+
+message NewFigureReply{
+  int32 id=1;
+}

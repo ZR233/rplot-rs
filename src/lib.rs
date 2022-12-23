@@ -10,9 +10,10 @@ use crate::client::*;
 use crate::client::plot_client::PlotClient;
 
 mod prelude{
-    use crate::{client, figure};
+    use crate::{client, figure, chart_data};
     pub use figure::Figure;
-    pub use client::Chart;
+    pub use chart_data::Chart;
+    pub use chart_data::Chart::Liner;
     pub use client::clear;
 
 }
@@ -55,7 +56,24 @@ mod tests {
     fn test_figure() {
         use super::prelude::*;
 
-        Figure::new("test_figure").show();
+        Figure::new("test_figure2")
+            // .with_sharp(2, 2)
+            .add_chart(Liner{title: "t1".to_string(), data_set: vec![
+                LinerData{
+                    name: "line1".to_string(),
+                    color: 0,
+                    data: vec![Data2D{x:0.0, y: 1.0}, Data2D{x:1.0, y: 2.0}],
+                },
+                // LinerData{
+                //     name: "line2".to_string(),
+                //     color: 0,
+                //     data: vec![Data2D{x:0.0, y: 2.0}, Data2D{x:1.0, y: 4.0}],
+                // }
+            ] })
+            // .add_chart(Liner{title: "t2".to_string(), data_set: vec![] })
+            // .add_chart(Liner{title: "t3".to_string(), data_set: vec![] })
+            // .add_chart(Liner{title: "t4".to_string(), data_set: vec![] })
+            .show();
 
 
         assert_eq!(4, 4);

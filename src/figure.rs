@@ -1,14 +1,17 @@
 use tonic::codegen::Body;
-use crate::client::{async_use_client, Chart, ChartSetType, NewFigureReply, Sharp};
+use crate::client::{async_use_client, ChartSetLiner, ChartSetType, NewFigureReply, Sharp};
 use crate::client;
 use futures::FutureExt;
+use prost::Message;
+use prost_types::Any;
 use tonic::{Response, Status};
 use crate::chart_data;
+use crate::prelude::Chart;
 
 pub struct Figure{
     name: String,
     sharp: Option<Sharp>,
-    charts: Vec<dyn chart_data::Chart>,
+    charts: Vec<Chart>,
 }
 
 impl Figure {
@@ -25,11 +28,7 @@ impl Figure {
         let len = width * height;
         self.charts = Vec::with_capacity(len);
         for _ in 0..len {
-            self.charts.push(Chart{
-                title: "blank".to_string(),
-                r#type: ChartSetType::Blank as _,
-                chart_set: None,
-            })
+            self.charts.push(Chart::UnKnown);
         }
 
         self
@@ -42,9 +41,12 @@ impl Figure {
 
 
         for i in 0..self.charts.len() {
-            if self.charts[i].r#type == ChartSetType::Blank as _ {
-                self.charts[i] = chart;
-                return self;
+            match self.charts[i] {
+                Chart::UnKnown => {
+                    self.charts[i] = chart;
+                    return self;
+                }
+                _ => {}
             }
         }
         panic!("figure [{}] charts(max: {}) is full", self.name, self.charts.len());
@@ -64,13 +66,37 @@ impl Figure {
                 width: 1,
             })
         }
+        let mut charts = vec![];
+
+        for chart in &self.charts {
+            let mut pb_chart = client::Chart::default();
+            pb_chart.r#type = ChartSetType::Blank as _;
+            match chart {
+                Chart::UnKnown => {}
+                Chart::Blank => {}
+                Chart::Liner { title, data_set } => {
+                    let any = Any{ type_url: "".to_string(), value: vec![] };
+
+                    pb_chart.title = title.to_string();
+                    pb_chart.r#type = ChartSetType::Liner as _;
+                    pb_chart.chart_set = Some(
+                        Any{
+                            type_url: "com.zr.rplot/plot.ChartSetLiner".to_string(),
+                            value: ChartSetLiner{ data_set: data_set.clone() }.encode_to_vec(),
+                        }
+                    );
+                }
+            }
+
+            charts.push(pb_chart);
+        }
 
 
         let request = tonic::Request::new(client::Figure{
             id: 0,
             name: self.name.clone(),
             sharp: self.sharp.clone(),
-            charts: self.charts.clone(),
+            charts,
         });
 
         async_use_client(|client| Box::pin(async move{

@@ -1,11 +1,7 @@
-use tonic::codegen::Body;
-use crate::client::{async_use_client, ChartSetLiner, ChartSetType, NewFigureReply, Sharp};
+use crate::client::{async_use_client, ChartSetLiner, ChartSetType, Sharp};
 use crate::client;
-use futures::FutureExt;
 use prost::Message;
 use prost_types::Any;
-use tonic::{Response, Status};
-use crate::chart_data;
 use crate::prelude::Chart;
 
 pub struct Figure{
@@ -75,7 +71,6 @@ impl Figure {
                 Chart::UnKnown => {}
                 Chart::Blank => {}
                 Chart::Liner { title, data_set } => {
-                    let any = Any{ type_url: "".to_string(), value: vec![] };
 
                     pb_chart.title = title.to_string();
                     pb_chart.r#type = ChartSetType::Liner as _;

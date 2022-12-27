@@ -3,11 +3,8 @@ mod chart_data;
 mod client;
 mod figure;
 
-
-use std::borrow::Borrow;
 use futures::FutureExt;
 use crate::client::*;
-use crate::client::plot_client::PlotClient;
 
 mod prelude{
     use crate::{client, figure, chart_data};

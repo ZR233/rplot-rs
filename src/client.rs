@@ -3,15 +3,12 @@ tonic::include_proto!("plot");
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
-use futures::StreamExt;
 use lazy_static::lazy_static;
 use tokio::runtime::Runtime;
 use tokio::sync::Mutex;
-use tonic::transport::{Channel, Error};
+use tonic::transport::{Channel};
 use crate::client::plot_client::PlotClient;
 use futures::FutureExt;
-use tonic::{Response, Status};
-use crate::client;
 
 lazy_static! {
     pub static ref RT: Runtime = {

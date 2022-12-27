@@ -56,19 +56,29 @@ mod tests {
     fn test_figure() {
         use super::prelude::*;
 
+        let data1: Vec<Data2D> = (0..10000).into_iter().map(|i|{
+            Data2D{x: i as _, y: (i as f64/2.0) as _}
+        }).collect();
+        let data2: Vec<Data2D> = (0..10000).into_iter().map(|i|{
+            Data2D{x: i as _, y: i as _}
+        }).collect();
+
+
         Figure::new("test_figure2")
             // .with_sharp(2, 2)
             .add_chart(Liner{title: "t1".to_string(), data_set: vec![
                 LinerData{
                     name: "line1".to_string(),
+                    // color: 0xFFEF9A9A,
                     color: 0,
-                    data: vec![Data2D{x:0.0, y: 1.0}, Data2D{x:1.0, y: 2.0}],
+                    // data: vec![Data2D{x:0.0, y: 1.0}, Data2D{x:1.0, y: 2.0}, Data2D{x:4.0, y: 3.0}],
+                    data: data1
                 },
-                // LinerData{
-                //     name: "line2".to_string(),
-                //     color: 0,
-                //     data: vec![Data2D{x:0.0, y: 2.0}, Data2D{x:1.0, y: 4.0}],
-                // }
+                LinerData{
+                    name: "line2".to_string(),
+                    color: 0,
+                    data: data2,
+                }
             ] })
             // .add_chart(Liner{title: "t2".to_string(), data_set: vec![] })
             // .add_chart(Liner{title: "t3".to_string(), data_set: vec![] })
